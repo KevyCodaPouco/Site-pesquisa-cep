@@ -20,26 +20,6 @@ Exibição dinâmica dos resultados na mesma página
 
 Layout responsivo para diferentes dispositivos
 
-🖼️ Captura de Tela
-(Insira aqui uma imagem ou gif da aplicação funcionando, se desejar)
-
-⚙️ Como Usar
-Clone o repositório:
-
-bash
-Copiar
-Editar
-git clone https://github.com/seuusuario/projeto-pesquisa-online.git
-Acesse a pasta do projeto:
-
-bash
-Copiar
-Editar
-cd projeto-pesquisa-online
-Abra o arquivo index.html em seu navegador.
-
-Não é necessário backend ou instalação adicional.
-
 📚 Possíveis Melhorias Futuras
 Adicionar filtro por categorias ou por tipo de conteúdo
 
