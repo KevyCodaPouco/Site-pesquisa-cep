@@ -1,12 +1,53 @@
----
-title: pesquisacep
-emoji: 🐳
-colorFrom: green
-colorTo: pink
-sdk: static
-pinned: false
-tags:
-  - deepsite
----
+🔎 Projeto de Pesquisa Online
+Este é um projeto web desenvolvido com HTML, CSS e JavaScript, com o objetivo de realizar pesquisas online de forma simples e eficiente. O projeto foi criado como parte de uma demanda acadêmica, visando aplicar e testar conhecimentos nas tecnologias front-end.
 
-Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
+🧠 Objetivo
+Criar uma interface funcional que permita ao usuário realizar pesquisas em tempo real, utilizando APIs públicas ou mecanismos de busca, com uma experiência amigável e responsiva.
+
+🚀 Tecnologias Utilizadas
+HTML5 – Estrutura da página
+
+CSS3 – Estilização e responsividade
+
+JavaScript – Lógica de pesquisa, consumo de API e manipulação do DOM
+
+💡 Funcionalidades
+Campo de busca com botão de pesquisa
+
+Integração com API para retorno de resultados (ex: DuckDuckGo, Wikipedia, etc.)
+
+Exibição dinâmica dos resultados na mesma página
+
+Layout responsivo para diferentes dispositivos
+
+🖼️ Captura de Tela
+(Insira aqui uma imagem ou gif da aplicação funcionando, se desejar)
+
+⚙️ Como Usar
+Clone o repositório:
+
+bash
+Copiar
+Editar
+git clone https://github.com/seuusuario/projeto-pesquisa-online.git
+Acesse a pasta do projeto:
+
+bash
+Copiar
+Editar
+cd projeto-pesquisa-online
+Abra o arquivo index.html em seu navegador.
+
+Não é necessário backend ou instalação adicional.
+
+📚 Possíveis Melhorias Futuras
+Adicionar filtro por categorias ou por tipo de conteúdo
+
+Histórico de pesquisas recentes
+
+Paginação dos resultados
+
+Modo escuro
+
+📌 Observações
+Este projeto foi desenvolvido com fins educacionais para praticar a integração entre HTML, CSS e JavaScript. É totalmente open-source e pode ser utilizado e adaptado livremente.
