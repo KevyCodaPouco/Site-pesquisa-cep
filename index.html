@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de CEP | ViaCEP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .input-cep {
+            letter-spacing: 3px;
+            font-size: 1.2rem;
+        }
+        
+        .shake {
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <!-- Header -->
+            <div class="bg-indigo-600 py-6 px-6 text-white">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold">Consulta de CEP</h1>
+                        <p class="text-indigo-100 mt-1">Encontre endereços no Brasil</p>
+                    </div>
+                    <div class="bg-white/20 p-3 rounded-full">
+                        <i class="fas fa-map-marker-alt text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Form -->
+            <div class="p-6">
+                <div class="mb-6">
+                    <label for="cep" class="block text-gray-700 font-medium mb-2">Digite o CEP</label>
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            id="cep" 
+                            maxlength="9"
+                            placeholder="00000-000" 
+                            class="w-full input-cep px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+                            oninput="formatCEP(this)">
+                        <button 
+                            id="searchBtn"
+                            class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-indigo-600 text-white p-2 rounded-lg hover:bg-indigo-700 transition"
+                            onclick="searchCEP()">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-2">Digite um CEP com 8 dígitos (ex: 01001000)</p>
+                </div>
+                
+                <!-- Results -->
+                <div id="resultContainer" class="hidden">
+                    <div class="border-t border-gray-200 pt-4 mt-4">
+                        <h2 class="text-lg font-semibold text-gray-800 mb-4">Dados do Endereço</h2>
+                        
+                        <div id="addressData" class="space-y-3 fade-in">
+                            <!-- Address data will be inserted here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Error -->
+                <div id="errorContainer" class="hidden mt-4 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-circle text-red-500"></i>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium text-red-800" id="errorMessage"></h3>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Loading -->
+                <div id="loadingContainer" class="hidden mt-6 text-center">
+                    <div class="inline-flex items-center">
+                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span class="text-gray-700">Buscando endereço...</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <div class="bg-gray-50 px-6 py-4 text-center">
+                <p class="text-xs text-gray-500">
+                    Dados fornecidos por <a href="https://viacep.com.br" target="_blank" class="text-indigo-600 hover:underline">ViaCEP</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Format CEP input (add hyphen)
+        function formatCEP(input) {
+            let value = input.value.replace(/\D/g, '');
+            
+            if (value.length > 5) {
+                value = value.substring(0, 5) + '-' + value.substring(5, 8);
+            }
+            
+            input.value = value;
+        }
+        
+        // Search CEP via API
+        function searchCEP() {
+            const cepInput = document.getElementById('cep');
+            const cep = cepInput.value.replace(/\D/g, '');
+            
+            // Hide previous results/errors
+            document.getElementById('resultContainer').classList.add('hidden');
+            document.getElementById('errorContainer').classList.add('hidden');
+            
+            // Validate CEP
+            if (cep.length !== 8) {
+                showError('CEP inválido! Digite exatamente 8 dígitos.');
+                cepInput.classList.add('shake', 'border-red-500');
+                setTimeout(() => {
+                    cepInput.classList.remove('shake');
+                }, 500);
+                return;
+            }
+            
+            // Show loading
+            document.getElementById('loadingContainer').classList.remove('hidden');
+            
+            // Fetch data from ViaCEP API
+            fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('CEP não encontrado');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.erro) {
+                        throw new Error('CEP não encontrado');
+                    }
+                    displayResults(data);
+                })
+                .catch(error => {
+                    showError(error.message || 'Ocorreu um erro ao buscar o CEP. Tente novamente.');
+                })
+                .finally(() => {
+                    document.getElementById('loadingContainer').classList.add('hidden');
+                });
+        }
+        
+        // Display results
+        function displayResults(data) {
+            const resultContainer = document.getElementById('resultContainer');
+            const addressData = document.getElementById('addressData');
+            
+            // Create HTML for address data
+            addressData.innerHTML = `
+                <div class="flex items-start">
+                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                        <i class="fas fa-road text-indigo-600"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">Logradouro</p>
+                        <p class="text-sm text-gray-900">${data.logradouro || 'Não informado'}</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start">
+                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                        <i class="fas fa-map-marker-alt text-indigo-600"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">Bairro</p>
+                        <p class="text-sm text-gray-900">${data.bairro || 'Não informado'}</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start">
+                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                        <i class="fas fa-city text-indigo-600"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">Cidade/UF</p>
+                        <p class="text-sm text-gray-900">${data.localidade || 'Não informado'}/${data.uf || 'Não informado'}</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start">
+                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                        <i class="fas fa-mail-bulk text-indigo-600"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-500">CEP</p>
+                        <p class="text-sm text-gray-900">${data.cep || 'Não informado'}</p>
+                    </div>
+                </div>
+            `;
+            
+            // Show results with animation
+            resultContainer.classList.remove('hidden');
+            addressData.classList.add('fade-in');
+        }
+        
+        // Show error message
+        function showError(message) {
+            const errorContainer = document.getElementById('errorContainer');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            errorMessage.textContent = message;
+            errorContainer.classList.remove('hidden');
+        }
+        
+        // Allow search on Enter key press
+        document.getElementById('cep').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchCEP();
+            }
+        });
+    </script>
+<p style="border-radius: 8px; text-align: center; font-size: 12px; color: #fff; margin-top: 16px;position: fixed; left: 8px; bottom: 8px; z-index: 10; background: rgba(0, 0, 0, 0.8); padding: 4px 8px;">Made with <img src="https://enzostvs-deepsite.hf.space/logo.svg" alt="DeepSite Logo" style="width: 16px; height: 16px; vertical-align: middle;display:inline-block;margin-right:3px;filter:brightness(0) invert(1);"><a href="https://enzostvs-deepsite.hf.space" style="color: #fff;text-decoration: underline;" target="_blank" >DeepSite</a> - 🧬 <a href="https://enzostvs-deepsite.hf.space?remix=Galarias01/pesquisacep" style="color: #fff;text-decoration: underline;" target="_blank" >Remix</a></p></body>
+</html>
